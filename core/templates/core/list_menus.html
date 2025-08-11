@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menus</title>
+</head>
+<body>
+    <h1>Available Menus</h1>
+    <ul>
+        {% for menu in menus %}
+            <li>
+                <strong>{{ menu.name }}</strong><br>
+                Items: {{ menu.items.all|join:", " }}<br>
+                Notes: {{ menu.dietary_notes }}
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'dashboard' %}" style="display: inline-block; margin-bottom: 20px; padding: 8px 12px; background-color: #ddd; text-decoration: none; border-radius: 5px;">← Back to Home</a>
+
+</body>
+</html>

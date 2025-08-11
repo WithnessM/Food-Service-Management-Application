@@ -1,0 +1,118 @@
+component design
+
+// --- Models Component ---
+Component Patient
+Properties:
+
+   patient_number as string
+   dietary_requirement as string
+
+   Methods:
+    Function save(): stores patient info in the database
+    Function getPatient(): retrieves patient details from the database
+
+Component FoodItem
+ Properties:
+    name as string
+    quantity as integer
+    unit as string
+    unit_price as decimal
+
+ Methods:
+    Function save(): stores food item in the database
+    Function getFoodItem(): retrieves food item details
+    Function updateStock(): updates the quantity in inventory
+
+// --- Views Component ---
+Component LoginView
+ Methods:
+   Function DISPLAY(request): shows login form
+   Function LOGIN(email, password): authenticates and logs user in
+
+Component DashboardView
+ Methods:
+   Function DISPLAY(request): shows main dashboard with navigation
+
+Component AddFoodItemView
+ Methods:
+   Function DISPLAY(request): shows food item form
+   Function SAVE_FORM(data): saves new food item
+
+Component AddInventoryView
+ Methods:
+   Function DISPLAY(request): shows inventory form
+   Function SAVE_FORM(data): saves transaction and updates budget
+
+Component AddPatientView
+Methods:
+
+Function DISPLAY(request): shows patient form
+
+Function SAVE_FORM(data): stores patient info
+
+Component AddMenuView
+Methods:
+
+Function DISPLAY(request): shows menu form
+
+Function SAVE_FORM(data): stores menu with selected food items
+
+Component BudgetDashboardView
+Methods:
+
+Function DISPLAY(request): shows all budgets, used and remaining
+
+Function CHECK_OVERFLOW(): shows warning if budget exceeded
+Component InventoryTransaction
+ Properties:
+
+    food_item as FoodItem
+
+    quantity as integer
+
+    transaction_type as string (IN or OUT)
+
+    date as date
+
+    total_cost as decimal
+
+    budget as Budget
+
+ Methods:
+
+    Function save(): calculates cost for OUT, updates budget used amount
+
+    Function getTransactions(): returns all transaction records
+    
+ Properties:
+
+    allocated_amount as decimal
+
+    used_amount as decimal
+
+    date as date
+
+ Methods:
+
+    Function save(): saves budget info
+
+    Function getRemaining(): returns remaining budget
+
+
+// --- Models Component ---
+Component Menu
+ Properties:
+
+    name as string
+
+    items as list of FoodItem
+
+    dietary_notes as string
+
+ Methods:
+
+    Function save(): stores menu in the database
+
+    Function getMenu(): retrieves menu and its food items
+
+

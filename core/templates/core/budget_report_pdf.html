@@ -1,0 +1,34 @@
+<h1>Budget Utilization Report</h1>
+
+<a href="{% url 'budget_report_pdf' %}" target="_blank" class="btn btn-primary">
+    View Budget Report PDF
+</a>
+
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse; margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>Budget ID</th>
+            <th>Allocated</th>
+            <th>Used</th>
+            <th>Remaining</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for budget in budgets %}
+        <tr>
+            <td>{{ budget.id }}</td>
+            <td>R{{ budget.allocated_amount }}</td>
+            <td>R{{ budget.used_amount }}</td>
+            <td>R{{ budget.allocated_amount|floatformat:2|add:"-"|add:budget.used_amount }}</td>
+            <td>
+                {% if budget.used_amount > budget.allocated_amount %}
+                    Over Budget
+                {% else %}
+                    On Track
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

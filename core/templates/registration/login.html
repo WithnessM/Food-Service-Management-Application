@@ -1,0 +1,122 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - FSM</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;  /* Disable scrolling */
+            background-color: rgb(53, 110, 143);
+            font-family: Arial, sans-serif;
+        }
+
+        .logo {
+            padding: 20px;
+        }
+
+        .logo img {
+            width: 80px;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Full viewport height */
+            box-sizing: border-box;
+        }
+
+        .login-title {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #005ca9;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #005ca9;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #004080;
+        }
+
+        .forgot-password {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .forgot-password a {
+            color: #e0e0e0;
+            font-size: 0.9em;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo">
+        <img src="{% static 'images/logo.png' %}" alt="FSM Logo">
+    </div>
+
+    <div class="login-container">
+        <div class="login-title">FOOD SERVICE MANAGEMENT</div>
+
+        <div class="login-box">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">User Log in</button>
+            </form>
+        </div>
+
+        <div class="forgot-password">
+            <a href="{% url 'password_reset' %}">Forgot your password?</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Cost Per Meal Report</h1>
+
+<table border="1" cellpadding="10" cellspacing="0" style="width: 50%; margin-top: 20px;">
+    <tr>
+        <th>Total Food Cost (Used)</th>
+        <td>R{{ total_cost }}</td>
+    </tr>
+    <tr>
+        <th>Total Patients Served</th>
+        <td>{{ patient_count }}</td>
+    </tr>
+    <tr>
+        <th>Average Cost Per Meal</th>
+        <td>R{{ cost_per_meal }}</td>
+    </tr>
+</table>
+
+<a href="{% url 'cost_per_meal_report_pdf' %}" 
+   target="_blank" 
+   style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #3da3c2ff; color: white; text-decoration: none; border-radius: 5px;">
+   View PDF
+</a>
+
+<a href="{% url 'dashboard' %}" 
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #ddd; text-decoration: none; border-radius: 5px;">
+   ← Back to Home
+</a>
+{% endblock %}

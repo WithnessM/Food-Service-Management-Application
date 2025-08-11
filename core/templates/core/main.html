@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FSMA </title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .sidebar {
+            width: 250px; background-color:rgb(45, 126, 151); position: fixed;
+            top: 0; bottom: 0; color: white; padding: 20px;
+        }
+        .sidebar a {
+            display: block; color: white; padding: 10px; text-decoration: none;
+        }
+        .sidebar a:hover { background-color: #003f75; }
+        .main-content { margin-left: 260px; padding: 20px; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo img { width: 100px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">
+        <img src="{% static 'images/logo.png' %}" alt="FSM Logo">
+    </div>
+    <a href="{% url 'dashboard' %}" style="
+    background-color:rgb(68, 156, 190);
+    color: #000;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
+">
+   Dashboard
+</a>
+
+    <a href="{% url 'add_food' %}">Add Food Items</a>
+    <a href="{% url 'add_menu' %}">Add Menu</a>
+    <a href="{% url 'add_patient' %}">Add Patient</a>
+    <a href="{% url 'add_food_usage' %}">Log Food Usage</a>
+    <a href="{% url 'add_budget' %}">Add Budget</a>
+    <a href="{% url 'add-inventory' %}">Add Inventory</a>
+
+    <a href="{% url 'list_menus' %}">Menu</a>
+    <a href="{% url 'cost_per_meal_day' %}">Cost Per Meal Day</a>
+    <a href="{% url 'stock_balance' %}">Stock Balance </a>
+    <a href="{% url 'list_patients' %}">Patients</a>
+    <a href="{% url 'budget_dashboard' %}">Budget</a>
+
+    <h4 style="color:rgb(93, 166, 235);">Reports</h4>
+    <a href="{% url 'patient_meal_report' %}">Patient Meal Distribution Report</a>
+    <a href="{% url 'cost_per_meal_report' %}">Cost Per Meal Report</a>
+    <a href="{% url 'patient_served_report' %}">View Patients Served Report</a>
+    <a href="{% url 'budget_report' %}">Budget Utilization Report</a>
+
+    
+        <a href="{% url 'logout' %}" style="
+    background-color:rgb(68, 156, 190);
+    color: #000;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
+">
+   Logout
+</a>
+   
+
+
+</div>
+
+
+<div class="main-content">
+    <div style="text-align: center;">
+    <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="600">
+</div>
+
+</div>
+
+
+
+</body>
+</html>

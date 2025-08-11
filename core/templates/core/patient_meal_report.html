@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Patient Meal Distribution Report</h1>
+
+<table border="1" cellpadding="10" cellspacing="0" style="width: 100%; margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>Patient Number</th>
+            <th>Category</th>
+            <th>Menu Assigned</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patient_number }}</td>
+            <td>{{ patient.category }}</td>
+            <td>
+                {% if patient.menu %}
+                    {{ patient.menu.name }}
+                {% else %}
+                    Not Assigned
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'patient_meal_report_pdf' %}" 
+   target="_blank"
+   style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #44b2c5ff; color: white; text-decoration: none; border-radius: 5px;">
+   View PDF
+</a>
+
+<a href="{% url 'dashboard' %}" 
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #ddd; text-decoration: none; border-radius: 5px;">
+   ← Back to Home
+</a>
+{% endblock %}
