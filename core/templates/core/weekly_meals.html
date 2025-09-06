@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load form_extras %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Enter Weekly Meals</h2>
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Week start input -->
+    <div class="mb-3">
+      {{ form.weekStart.label_tag }} {{ form.weekStart }}
+    </div>
+
+    <!-- Meals entry table -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Day</th>
+          {% for recipient in recipients %}
+            {% for code,label in meal_types %}
+              <th>{{ recipient.name }} - {{ label }}</th>
+            {% endfor %}
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for day_idx in days %}
+          <tr>
+            <td>Day {{ forloop.counter }}</td>
+            {% for field_name in field_matrix|index:forloop.counter0 %}
+              <td>{{ form|get_field:field_name }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Save Weekly Meals</button>
+  </form>
+</div>
+
+<a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+{% endblock %}

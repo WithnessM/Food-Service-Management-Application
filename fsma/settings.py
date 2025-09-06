@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,12 +83,12 @@ WSGI_APPLICATION = 'fsma.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fsma_db',              
-        'USER': 'postgres',             
-        'PASSWORD': '170933', 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fsmaDB',              
+        'USER': 'fsma_user',             
+        'PASSWORD': 'Withness@!0205', 
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '3306',
     }
 }
 

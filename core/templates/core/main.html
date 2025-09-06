@@ -3,20 +3,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FSMA </title>
+    <title>FSMA</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow-y: auto; /* allow vertical scrolling */
+        }
+
         .sidebar {
-            width: 250px; background-color:rgb(45, 126, 151); position: fixed;
-            top: 0; bottom: 0; color: white; padding: 20px;
+            width: 250px;
+            background-color: rgb(45, 126, 151);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            color: white;
+            padding: 20px;
+            overflow-y: auto; 
         }
+
         .sidebar a {
-            display: block; color: white; padding: 10px; text-decoration: none;
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
         }
-        .sidebar a:hover { background-color: #003f75; }
-        .main-content { margin-left: 260px; padding: 20px; }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo img { width: 100px; }
+
+        .sidebar a:hover {
+            background-color: #003f75;
+        }
+
+        .main-content {
+            margin-left: 260px; 
+            padding: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 100px;
+        }
+
+        h4 {
+            color: rgb(93, 166, 235);
+            margin-top: 15px;
+        }
+        .spacer {
+            margin-top: 10px; 
+            }
     </style>
 </head>
 <body>
@@ -25,66 +64,94 @@
     <div class="logo">
         <img src="{% static 'images/logo.png' %}" alt="FSM Logo">
     </div>
+
     <a href="{% url 'dashboard' %}" style="
-    background-color:rgb(68, 156, 190);
-    color: #000;
-    font-weight: bold;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: block;
-    text-align: center;
-    box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
-">
-   Dashboard
-</a>
+        background-color: rgb(68, 156, 190);
+        color: #000;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: block;
+        text-align: center;
+        box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
+    ">Dashboard</a>
 
-    <a href="{% url 'add_food' %}">Add Food Items</a>
-    <a href="{% url 'add_menu' %}">Add Menu</a>
-    <a href="{% url 'add_patient' %}">Add Patient</a>
-    <a href="{% url 'add_food_usage' %}">Log Food Usage</a>
-    <a href="{% url 'add_budget' %}">Add Budget</a>
-    <a href="{% url 'add-inventory' %}">Add Inventory</a>
 
-    <a href="{% url 'list_menus' %}">Menu</a>
-    <a href="{% url 'cost_per_meal_day' %}">Cost Per Meal Day</a>
-    <a href="{% url 'stock_balance' %}">Stock Balance </a>
-    <a href="{% url 'list_patients' %}">Patients</a>
-    <a href="{% url 'budget_dashboard' %}">Budget</a>
+    <a href="{% url 'recipients_list' %}">Add/View Meal Recipients</a>
+    <a href="{% url 'meals_list' %}">Add/View  Meals</a>
 
-    <h4 style="color:rgb(93, 166, 235);">Reports</h4>
-    <a href="{% url 'patient_meal_report' %}">Patient Meal Distribution Report</a>
-    <a href="{% url 'cost_per_meal_report' %}">Cost Per Meal Report</a>
-    <a href="{% url 'patient_served_report' %}">View Patients Served Report</a>
-    <a href="{% url 'budget_report' %}">Budget Utilization Report</a>
+    <div class="spacer"></div>
+
+    <a href="{% url 'weekly_summary' year=2025 week=36 %}" class="btn btn-secondary">View Week Summary</a>
+    <a href="{% url 'monthly_summary_select' %}">View Monthly Summary</a>
+
+    <div class="spacer"></div>
+
+    <a href="{% url 'categories' %}"> Add/View Categories</a>
+    <a href="{% url 'stock_list' %}"> Add/View Stock Items</a>
+    <a href="{% url 'stock_movement_list' %}"> Add/View Stock Movements</a>
+
+    <div class="spacer"></div>
+
+    <h2>{{ reports }}</h2>
+    
+
+
+    <!-- Weekly Report -->
+    {% if week %}
+    <p>
+        <a href="{% url 'weekly_summary_preview' year=year week=week %}">
+        Preview Weekly Summary
+        </a>
+    </p>
+    {% else %}
+    <p>No weekly data available.</p>
+    {% endif %}
+
+    <!-- Monthly Report -->
+    {% if month %}
+    <p>
+        <a href="{% url 'monthly_summary_preview' year=year month=month %}">
+        Preview Monthly Summary
+        </a>
+    </p>
+    {% else %}
+    <p>No monthly data available.</p>
+    {% endif %}
+
+    <a href="{% url 'stock_movement_preview' %}"> 
+       
+        Preview Stock Movement 
+    </a>
+
+
 
     
-        <a href="{% url 'logout' %}" style="
-    background-color:rgb(68, 156, 190);
-    color: #000;
-    font-weight: bold;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: block;
-    text-align: center;
-    box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
-">
-   Logout
-</a>
+
    
 
 
-</div>
 
+    <a href="{% url 'logout' %}" style="
+        background-color: rgb(68, 156, 190);
+        color: #000;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: block;
+        text-align: center;
+        box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
+    ">Logout</a>
+</div>
 
 <div class="main-content">
     <div style="text-align: center;">
-    <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="600">
+        <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="600">
+    </div>
+    
 </div>
-
-</div>
-
 
 
 </body>

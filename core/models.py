@@ -1,83 +1,146 @@
 from django.db import models
-from django.db.models import F
-from django.core.exceptions import ValidationError
-from decimal import Decimal
-from django.utils import timezone
 
 
-class Menu(models.Model):
-    name = models.CharField(max_length=100)
-    items = models.ManyToManyField('FoodItem')  
-    dietary_notes = models.TextField(blank=True)
+# Meals
+
+class MealRecipient(models.Model):
+    
+    #Represents a person receiving meals
+
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = "Meal Recipient"
+        verbose_name_plural = "Meal Recipients"
 
     def __str__(self):
         return self.name
-    
-class Patient(models.Model):
+
+
+class Meals(models.Model):
+    #Represents a meal entry for a recipient
+
+    weekStart = models.DateField()
+    weekEnd = models.DateField()
+    mealDate = models.DateField()
+    quantity = models.IntegerField()
+
     CATEGORY_CHOICES = [
-        ('Diabetic', 'Diabetic'),
-        ('Non-Diabetic', 'Non-Diabetic'),
+        ("O", "Breakfast"),
+        ("M", "Lunch"),
+        ("A", "Dinner"),
+        ("N", "Night Snack"),
     ]
-
-    patient_number = models.CharField(max_length=20, unique=True)
-    dietary_requirement = models.TextField(blank=True)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
-    menu = models.ForeignKey('Menu', on_delete=models.SET_NULL, null=True, blank=True)
-    date_served = models.DateField(default=timezone.now)
-    
-
+    mealCategory = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    mealsFor = models.ForeignKey(MealRecipient, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.patient_number} ({self.category})"
+        return f"{self.mealDate} - {self.get_mealCategory_display()} for {self.mealsFor} ({self.quantity})"
 
-class FoodItem(models.Model):
-    name = models.CharField(max_length=100)
-    unit = models.CharField(max_length=10)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+class MonthlySummary(models.Model):
+    #Stores aggregated monthly meals per month/year
+
+    month = models.IntegerField()
+    year = models.IntegerField()
+    totalMeals = models.IntegerField()
+
+    class Meta:
+        unique_together = ('month', 'year')
+
+    def __str__(self):
+        return f"{self.month}/{self.year} - {self.totalMeals} meals"
+
+
+# Stock
+class StockCategory(models.Model):
+    #Category for stock items used in budgeting and expenses
+
+    code = models.CharField(max_length=10, unique=True)
+    categoryName = models.CharField(max_length=100)
+    rationGroupNo = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.code} - {self.categoryName}"
+
+
+class Category(models.Model):
+    #General category for stock items
+
+    category_no = models.PositiveIntegerField(unique=True)
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.description
+
+
+class StockItem(models.Model):
+    #Stock item with unit and optional size
+
+    name = models.CharField(max_length=200)
+    unit = models.CharField(max_length=20, default="KG")
+    size = models.CharField(max_length=50, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
 
-class Budget(models.Model):
-    allocated_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    used_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    date = models.DateField(auto_now_add=True)
+class WeeklyStockMovement(models.Model):
+    #Tracks weekly movement of stock items
+
+
+    stock_item = models.ForeignKey(StockItem, on_delete=models.CASCADE)
+    week_number = models.PositiveIntegerField()
+    total_received = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_issued = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    extern_issues = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Budget (R{self.allocated_amount})"
-
-    @property
-    def remaining_amount(self):
-        return self.allocated_amount - self.used_amount
+        return f"{self.stock_item.name} - Week {self.week_number}"
 
 
+# Expense and Buget.....
 
-class InventoryTransaction(models.Model):
-    food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
-    quantity = models.FloatField()
-    transaction_type = models.CharField(max_length=10, choices=[('IN', 'Received'), ('OUT', 'Issued')])
-    date = models.DateField(auto_now_add=True)
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    budget = models.ForeignKey(Budget, on_delete=models.CASCADE, null=True, blank=True)
+class Expenses(models.Model):
+    #Tracks monthly budgeted vs actual expenses for a stock category
 
-    def save(self, *args, **kwargs):
-        if self.transaction_type == 'OUT':
-            self.total_cost = Decimal(self.food_item.unit_price) * Decimal(self.quantity)
+    month = models.IntegerField()
+    year = models.IntegerField()
+    budgetedExpense = models.DecimalField(max_digits=12, decimal_places=2)
+    actualExpense = models.DecimalField(max_digits=12, decimal_places=2)
+    category = models.ForeignKey(StockCategory, on_delete=models.CASCADE, related_name="expenses")
 
-            if self.budget:
-                if self.budget.used_amount + self.total_cost > self.budget.allocated_amount:
-                    raise ValidationError("This transaction exceeds the allocated budget.")
+    def __str__(self):
+        return f"{self.category.categoryName} - {self.month}/{self.year}"
 
-        super().save(*args, **kwargs)
 
-        if self.transaction_type == 'OUT' and self.budget:
-            Budget.objects.filter(pk=self.budget.pk).update(
-                used_amount=F('used_amount') + self.total_cost
-            )
+class RationAllowance(models.Model):
+    #Tracks ration allowances and actual usage per category
 
-class FoodItemUsage(models.Model):
-    food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
-    quantity_used = models.FloatField()
-    date_used = models.DateField() 
+    month = models.IntegerField()
+    year = models.IntegerField()
+    min_Allowance = models.DecimalField(max_digits=10, decimal_places=2)
+    max_Allowance = models.DecimalField(max_digits=10, decimal_places=2)
+    actualUsage = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey(StockCategory, on_delete=models.CASCADE, related_name="rationAllowances")
 
+    def __str__(self):
+        return f"{self.category.categoryName} - {self.month}/{self.year}"
+
+
+class AnnualSummary(models.Model):
+    # sum total summary per year combining meals, expenses and rations.
+    year = models.IntegerField()
+    totalFeeding = models.IntegerField()
+    totalExpenditure = models.DecimalField(max_digits=12, decimal_places=2)
+    totalRations = models.DecimalField(max_digits=12, decimal_places=2)
+
+    summary = models.ForeignKey(MonthlySummary, on_delete=models.CASCADE, related_name="annualSummaries")
+    expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, related_name="annualSummaries")
+    ration = models.ForeignKey(RationAllowance, on_delete=models.CASCADE, related_name="annualSummaries")
+
+    def __str__(self):
+        return f"Annual Summary {self.year}"

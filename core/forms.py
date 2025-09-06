@@ -1,66 +1,88 @@
 from django import forms
-from .models import FoodItem, InventoryTransaction
+
+from .models import (
+    Meals, MonthlySummary, MealRecipient,
+    Category, StockItem, WeeklyStockMovement
+)
 
 
-class FoodItemForm(forms.ModelForm):
+# Meals Form
+
+class MealsForm(forms.ModelForm):
+    """Form for creating/editing a single meal entry"""
     class Meta:
-        model = FoodItem
-        fields = ['name', 'unit', 'unit_price']
-
-
-
-class InventoryTransactionForm(forms.ModelForm):
-    class Meta:
-        model = InventoryTransaction
-        fields = ['food_item', 'quantity', 'transaction_type', 'budget']
+        model = Meals
+        fields = ["weekStart", "weekEnd", "mealDate", "mealCategory", "mealsFor", "quantity"]
         widgets = {
-            'transaction_type': forms.Select(choices=InventoryTransaction._meta.get_field('transaction_type').choices)
+            "weekStart": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "weekEnd": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "mealDate": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "mealCategory": forms.Select(attrs={"class": "form-select"}),
+            "mealsFor": forms.Select(attrs={"class": "form-select"}),
+            "quantity": forms.NumberInput(attrs={"min": 0, "class": "form-control"}),
         }
 
 
-from .models import Patient
+class WeeklyMealsForm(forms.Form):
+    #form for entering meals for a whole week.
+  
+    weekStart = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"})
+    )
 
-class PatientForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Create fields for each day, recipient and meal type
+
+        recipients = MealRecipient.objects.all()
+        meal_types = Meals.CATEGORY_CHOICES
+        for day in range(7):
+            for recipient in recipients:
+                for code, label in meal_types:
+                    field_name = f"{day}_{recipient.id}_{code}"
+                    self.fields[field_name] = forms.IntegerField(
+                        required=False,
+                        min_value=0,
+                        initial=0,
+                        widget=forms.NumberInput(attrs={"class": "form-control", "min": 0}),
+                        label=f"Day {day+1} - {recipient.name} - {label}",
+                    )
+
+
+class MonthlySummaryForm(forms.ModelForm):
+    #Form for selecting month and year 
+
     class Meta:
-        model = Patient
-        fields = ['patient_number', 'dietary_requirement','category','menu']
-
-from .models import Menu
-
-class MenuForm(forms.ModelForm):
-    class Meta:
-        model = Menu
-        fields = ['name', 'items', 'dietary_notes']
+        model = MonthlySummary
+        fields = ["month", "year"]
         widgets = {
-            'items': forms.CheckboxSelectMultiple()
+            "month": forms.NumberInput(attrs={"min": 1, "max": 12, "class": "form-control"}),
+            "year": forms.NumberInput(attrs={"min": 2000, "max": 2100, "class": "form-control"}),
         }
 
 
-from django.contrib.auth.forms import AuthenticationForm
+# Stock Formss
 
-class EmailAuthenticationForm(AuthenticationForm):
-    username = forms.EmailField(label='Email', max_length=254)
+class CategoryForm(forms.ModelForm):
+    #Form to create/edit a stock category
 
-
-
-
-from .models import FoodItemUsage
-
-class FoodItemUsageForm(forms.ModelForm):
     class Meta:
-        model = FoodItemUsage
-        fields = ['food_item', 'quantity_used', 'date_used']
+        model = Category
+        fields = ["category_no", "description"]
 
-from .models import Budget
 
-class BudgetForm(forms.ModelForm):
+class StockItemForm(forms.ModelForm):
+    #Form to create or edit a stock item
+
     class Meta:
-        model = Budget
-        fields = ['allocated_amount']
+        model = StockItem
+        fields = ["name", "unit", "size", "category"]
 
 
+class WeeklyStockMovementForm(forms.ModelForm):
+    #Form to createooredit weekly stock movement
 
-class UpdateUsedAmountForm(forms.ModelForm):
     class Meta:
-        model = Budget
-        fields = ['used_amount']
+        model = WeeklyStockMovement
+        fields = ["stock_item", "week_number", "total_received", "total_issued", "extern_issues", "cost"]

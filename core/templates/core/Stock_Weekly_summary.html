@@ -1,0 +1,48 @@
+<h2>Weekly Stock Summary</h2>
+
+<form method="get" action="{% url 'weekly_summary' %}">
+  <label for="week_number">Select Week:</label>
+  <select name="week_number" id="week_number" onchange="this.form.submit()">
+    {% for week in weeks %}
+      <option value="{{ week }}" {% if week == selected_week %}selected{% endif %}>
+        Week {{ week }}
+      </option>
+    {% endfor %}
+  </select>
+</form>
+
+{% if summary %}
+<table border="1" cellpadding="5" style="margin-top: 20px;">
+  <tr style="background: #42b6c5ff;">
+    <th>Category</th>
+    <th>Total Received</th>
+    <th>Total Issued</th>
+    <th>Extern Issues</th>
+    <th>Total Cost</th>
+  </tr>
+  {% for row in summary %}
+  <tr>
+    <td>{{ row.stock_item__category__description }}</td>
+    <td>{{ row.total_received|floatformat:2 }}</td>
+    <td>{{ row.total_issued|floatformat:2 }}</td>
+    <td>{{ row.total_extern|floatformat:2 }}</td>
+    <td>{{ row.total_cost|floatformat:2 }}</td>
+  </tr>
+  {% endfor %}
+  <tr style="font-weight: bold; background-color: #f0f0f0;">
+    <td>Grand Total</td>
+    <td>{{ totals.total_received|floatformat:2 }}</td>
+    <td>{{ totals.total_issued|floatformat:2 }}</td>
+    <td>{{ totals.total_extern|floatformat:2 }}</td>
+    <td>{{ totals.total_cost|floatformat:2 }}</td>
+  </tr>
+</table>
+{% else %}
+<p>No data available for this week.</p>
+{% endif %}
+
+<a href="{% url 'dashboard' %}">Back to Dashboard</a>
+<a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>

@@ -1,0 +1,36 @@
+<h2>Monthly Summary for {{ month_name }} ({{ date_range }})</h2>
+
+{% if meals %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Meal Category</th>
+            <th>Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for meal in meals %}
+        <tr>
+            <td>{{ meal.mealDate|date:"D, d M Y" }}</td>
+            <td>{{ meal.mealCategory }}</td>
+            <td>{{ meal.quantity }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Export button -->
+<p>
+    <a href="{% url 'export_monthly_excel' year=year month=month %}" 
+       style="display:inline-block; padding:5px 10px; background-color:green; color:white; text-decoration:none; border-radius:4px;">
+        Download Excel document
+    </a>
+</p>
+{% else %}
+<p>No data available for this month.</p>
+{% endif %}
+  <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+    </a>

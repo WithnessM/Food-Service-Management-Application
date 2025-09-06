@@ -1,17 +1,16 @@
-
-
-#..
 from django.contrib import admin
 from .models import (
-     Patient, FoodItem, Budget,
-    InventoryTransaction, FoodItemUsage, Menu
+    Meals, MonthlySummary, StockCategory, StockItem,
+    Expenses, RationAllowance, AnnualSummary
 )
 
 
-admin.site.register(Patient)
-admin.site.register(FoodItem)
-admin.site.register(Budget)
-admin.site.register(InventoryTransaction)
-admin.site.register(FoodItemUsage)
-admin.site.register(Menu)
+# Simple registration to enable Django admin interface
 
+admin.site.register(Meals)              
+admin.site.register(MonthlySummary)    
+admin.site.register(StockCategory)      
+admin.site.register(StockItem)          
+admin.site.register(Expenses)           
+admin.site.register(RationAllowance)    
+admin.site.register(AnnualSummary)      

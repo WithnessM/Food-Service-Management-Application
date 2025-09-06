@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>All Stock Movements</h2>
+
+  <table class="table table-bordered table-striped">
+    <thead style="background: #52a7ecff;">
+      <tr>
+        <th>Item</th>
+        <th>Category</th>
+        <th>Week</th>
+        <th>Total Received</th>
+        <th>Total Issued</th>
+        <th>Extern Issues</th>
+        <th>Cost</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for movement in movements %}
+      <tr>
+        <td>{{ movement.stock_item.name }}</td>
+        <td>{{ movement.stock_item.category.description }}</td>
+        <td>{{ movement.week_number }}</td>
+        <td>{{ movement.total_received|floatformat:2 }}</td>
+        <td>{{ movement.total_issued|floatformat:2 }}</td>
+        <td>{{ movement.extern_issues|floatformat:2 }}</td>
+        <td>{{ movement.cost|floatformat:2 }}</td>
+        <td>{{ movement.created_at|date:"Y-m-d H:i" }}</td>
+        <td>
+          <a href="{% url 'stock_movement_edit' movement.pk %}">Edit</a> |
+          <a href="{% url 'stock_movement_delete' movement.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9">No stock movements recorded yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p style="margin-top: 15px;">
+    <a href="{% url 'stock_movement_add' %}" class="btn btn-primary">Add New Stock Movement</a>
+  </p>
+
+  <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+    </a>
+
+  
+</div>
+{% endblock %}

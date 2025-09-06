@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Stock List</h2>
+
+  <table class="table table-bordered">
+    <thead style="background: #39a4beff;">
+      <tr>
+        <th>ITEM</th>
+        <th>UNIT</th>
+        <th>SIZE</th>
+        <th>CAT NO</th>
+        <th>CATEGORY DESCRIPTION</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in stock_items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.unit }}</td>
+        <td>{{ item.size }}</td>
+        <td>{{ item.category.category_no }}</td>
+        <td>{{ item.category.description }}</td>
+        <td>
+          <a href="{% url 'stock_item_edit' item.pk %}">Edit</a> |
+          <a href="{% url 'stock_item_delete' item.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">No stock items found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p style="margin-top: 15px;">
+    <a href="{% url 'stock_item_add' %}" class="btn btn-primary">Add New Stock Item</a>
+  </p>
+
+  <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+   </a>
+
+</div>
+{% endblock %}

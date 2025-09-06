@@ -1,0 +1,86 @@
+<h2>Stock Movement Preview</h2>
+
+{% if movements %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Week Number</th>
+            <th>Stock Item</th>
+            <th>Category</th>
+            <th>Total Received</th>
+            <th>Total Issued</th>
+            <th>External Issues</th>
+            <th>Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for m in movements %}
+        <tr>
+            <td>{{ m.week_number }}</td>
+            <td>{{ m.stock_item.name }}</td>
+            <td>{{ m.stock_item.category.description }}</td>
+            <td>{{ m.total_received }}</td>
+            <td>{{ m.total_issued }}</td>
+            <td>{{ m.extern_issues }}</td>
+            <td>{{ m.cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>Totals per Category</h3>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Total Received</th>
+            <th>Total Issued</th>
+            <th>External Issues</th>
+            <th>Total Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for cat in category_totals %}
+        <tr>
+            <td>{{ cat.description }}</td>
+            <td>{{ cat.total_received }}</td>
+            <td>{{ cat.total_issued }}</td>
+            <td>{{ cat.total_extern }}</td>
+            <td>{{ cat.total_cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>Grand Total</h3>
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Total Received</th>
+        <th>Total Issued</th>
+        <th>External Issues</th>
+        <th>Total Cost</th>
+    </tr>
+    <tr>
+        <td>{{ grand_totals.total_received }}</td>
+        <td>{{ grand_totals.total_issued }}</td>
+        <td>{{ grand_totals.total_extern }}</td>
+        <td>{{ grand_totals.total_cost }}</td>
+    </tr>
+</table>
+
+<!-- Export button inside the preview page -->
+<p>
+    <a href="{% url 'export_stock_excel' %}" 
+        style="display:inline-block; padding:5px 10px; background-color:green; color:white; text-decoration:none; border-radius:4px;">
+        Download Excel document
+    </a>
+</p>
+
+{% else %}
+<p>No stock movement data available.</p>
+{% endif %}
+
+<a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>

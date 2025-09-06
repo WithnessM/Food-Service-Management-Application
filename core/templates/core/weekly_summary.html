@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="page-title">
+    Weekly Summary ({{ start_date }} - {{ end_date }})
+  </h2>
+
+  <div class="table-wrapper">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Recipient</th>
+          {% for day in summary.0.meals %}
+            <th colspan="{{ meal_types|length }}">
+              {{ start_date|date:"d/m" |add:forloop.counter0 }}
+            </th>
+          {% endfor %}
+          <th>Total</th>
+        </tr>
+        <tr>
+          <th></th>
+          {% for day in summary.0.meals %}
+            {% for code,label in meal_types.items %}
+              <th>{{ code }}</th>
+            {% endfor %}
+          {% endfor %}
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in summary %}
+          <tr>
+            <td class="recipient">{{ row.recipient }}</td>
+            {% for day_data in row.meals %}
+              {% for code,label in meal_types.items %}
+                <td>{{ day_data|get_item:code }}</td>
+              {% endfor %}
+            {% endfor %}
+            <td class="total">{{ row.total }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="back-link">
+  <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<style>
+  body {
+    background: #f4f6f9;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #222;
+  }
+
+  .table-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .custom-table thead th {
+    background: #30aac9;
+    color: white;
+    padding: 12px 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .custom-table tbody td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .custom-table tbody tr:hover {
+    background: #f9fafc;
+  }
+
+  .recipient {
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .total {
+    font-weight: 700;
+    color: #30aac9;
+  }
+
+  .btn-back {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    background: #30aac9;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+  }
+
+  .btn-back:hover {
+    background: #2695af;
+  }
+
+  .back-link {
+    text-align: center;
+  }
+</style>
+{% endblock %}

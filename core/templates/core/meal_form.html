@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ form_title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.weekStart.label_tag }} {{ form.weekStart }}
+        </div>
+        <div class="mb-3">
+            {{ form.weekEnd.label_tag }} {{ form.weekEnd }}
+        </div>
+        <div class="mb-3">
+            {{ form.mealDate.label_tag }} {{ form.mealDate }}
+        </div>
+        <div class="mb-3">
+            {{ form.mealCategory.label_tag }} {{ form.mealCategory }}
+        </div>
+        <div class="mb-3">
+            {{ form.mealsFor.label_tag }} {{ form.mealsFor }}
+        </div>
+        <div class="mb-3">
+            {{ form.quantity.label_tag }} {{ form.quantity }}
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'meals_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+<a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+{% endblock %}

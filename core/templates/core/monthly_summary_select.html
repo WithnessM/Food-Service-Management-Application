@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Select Month to View Summary</h2>
+  <form method="post" class="mb-3">
+    {% csrf_token %}
+    {{ form.year.label_tag }} {{ form.year }}
+    {{ form.month.label_tag }} {{ form.month }}
+    <button type="submit" class="btn btn-primary">View Summary</button>
+  </form>
+</div>
+<a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+{% endblock %}
