@@ -6,6 +6,9 @@ import os
 from pathlib import Path
 import dj_database_url
 
+
+print("RENDER environment variable:", os.environ.get("RENDER"))
+
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
