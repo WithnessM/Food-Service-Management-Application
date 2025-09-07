@@ -22,11 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os  
 
-DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
