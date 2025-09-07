@@ -83,17 +83,37 @@ WSGI_APPLICATION = 'fsma.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+from pathlib import Path
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fsmaDB',              
-        'USER': 'fsma_user',             
-        'PASSWORD': 'Withness@!0205', 
-        'HOST': 'localhost',
-        'PORT': '3306',
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+if os.environ.get("RENDER") == "true":
+    # PostgreSQL on Render
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB"),
+            "USER": os.environ.get("POSTGRES_USER"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": os.environ.get("POSTGRES_HOST"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
     }
-}
+else:
+    # Local PostgreSQL
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "fsmadb",
+            "USER": "postgres",
+            "PASSWORD": "Withness@!0205",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+
+
 
 
 # Password validation
