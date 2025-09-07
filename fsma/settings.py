@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os  
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+')
+DJANGO_SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -89,19 +89,19 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 if os.environ.get("RENDER") == "true":
-    # PostgreSQL on Render
+    # Database settings for Render
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB"),
-            "USER": os.environ.get("POSTGRES_USER"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-            "HOST": os.environ.get("POSTGRES_HOST"),
-            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+            "NAME": os.environ.get("DB_NAME"),      # Render DB name
+            "USER": os.environ.get("DB_USER"),      # Render DB user
+            "PASSWORD": os.environ.get("DB_PASSWORD"), # Render DB password
+            "HOST": os.environ.get("DB_HOST"),      # Render DB host
+            "PORT": os.environ.get("DB_PORT", "5432"),
         }
     }
 else:
-    # Local PostgreSQL
+    # Local development
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
