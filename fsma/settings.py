@@ -68,29 +68,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fsma.wsgi.application'
 
 # Database
-import os
-import dj_database_url
 
-DEBUG = os.environ.get("DEBUG", "True") == "True"
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "fallback-secret")
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+
 
 if os.environ.get("RAILWAY") == "true":
     DATABASES = {
         "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
-
 else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "fsmadb",
+            "NAME": "railway",
             "USER": "postgres",
-            "PASSWORD": "Withness@!0205",
+            "PASSWORD": "jQlToDvMhgXMCzEykiqGCXBCarcqoAga",
             "HOST": "localhost",
             "PORT": "5432",
         }
     }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
