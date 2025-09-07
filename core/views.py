@@ -762,3 +762,5 @@ def export_stock_excel(request):
     response['Content-Disposition'] = 'attachment; filename="Stock_Summary.xlsx"'
     wb.save(response)
     return response
+
+
