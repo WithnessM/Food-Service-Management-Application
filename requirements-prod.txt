@@ -5,7 +5,7 @@ Django==5.2
 psycopg2-binary==2.9.10
 
 # Excel generation
-openpyxl==3.1.2    # if you use xlsxwriter instead, replace this line
+openpyxl==3.1.2    
 
 # Image processing
 pillow==11.2.1
@@ -13,8 +13,6 @@ pillow==11.2.1
 # HTML parsing & scraping
 beautifulsoup4==4.13.4
 
-# PDF generation
-weasyprint==65.1
 
 # Database query utilities
 sqlparse==0.5.3
