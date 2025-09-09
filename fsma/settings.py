@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['13.245.32.249', 'localhost', '127.0.0.1']
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+STATIC_ROOT = '/home/ec2-user/Food-Service-Management-Application/staticfiles'
 
 
 # Application definition
