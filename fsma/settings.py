@@ -16,11 +16,12 @@ SECRET_KEY = os.environ.get(
     'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+'
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True          # temporarily for testing
+ALLOWED_HOSTS = ['13.245.32.249', 'localhost', '127.0.0.1']
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Allow all hosts temporarily for EC2 deployment
-ALLOWED_HOSTS = ['*']
+
 
 # Application definition
 INSTALLED_APPS = [
