@@ -16,8 +16,10 @@ SECRET_KEY = os.environ.get(
     'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+'
 )
 
-DEBUG = True          # temporarily for testing
-ALLOWED_HOSTS = ['13.245.32.249', 'localhost', '127.0.0.1']
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+ALLOWED_HOSTS = ['fsma.co.za', 'www.fsma.co.za']
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
