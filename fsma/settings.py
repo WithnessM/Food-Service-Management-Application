@@ -16,7 +16,7 @@ SECRET_KEY = os.environ.get(
     'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+'
 )
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 
 from decouple import config
 
