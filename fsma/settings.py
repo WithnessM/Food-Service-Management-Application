@@ -66,16 +66,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fsma.wsgi.application'
 # Database configuration
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "fsmadb"),
-        "USER": os.environ.get("DB_USER", "fsma_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "Withness@!0205"),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'fsmadb',          
+        'USER': 'fsma_user',       
+        'PASSWORD': 'Withness-0205',
+        'HOST': 'fsmadb.cxcoqockum2s.af-south-1.rds.amazonaws.com', 
+        'PORT': '5432',
     }
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
