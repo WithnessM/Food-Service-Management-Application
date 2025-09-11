@@ -18,7 +18,10 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['fsma.co.za', 'www.fsma.co.za']
+from decouple import config
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='fsma.co.za,www.fsma.co.za').split(',')
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
