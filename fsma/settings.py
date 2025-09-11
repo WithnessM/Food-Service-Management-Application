@@ -21,14 +21,18 @@ DEBUG = True
 from decouple import config
 
 #ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='fsma.co.za,www.fsma.co.za').split(',')
-ALLOWED_HOSTS = ['fsma.co.za', 'www.fsma.co.za', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['fsma.co.za', '.fsma.co.za', '127.0.0.1', 'localhost']
+
+
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATIC_ROOT = '/home/ec2-user/Food-Service-Management-Application/staticfiles'
+# Local static assets during development
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# Where collectstatic will put everything
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Application definition
 INSTALLED_APPS = [
