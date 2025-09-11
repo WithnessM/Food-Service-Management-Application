@@ -67,14 +67,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fsma.wsgi.application'
 # Database configuration
 
+from decouple import config
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fsmadb',          
-        'USER': 'fsma_user',       
-        'PASSWORD': 'Withness-0205',
-        'HOST': 'fsmadb.cxcoqockum2s.af-south-1.rds.amazonaws.com', 
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT', cast=int),
     }
 }
 
