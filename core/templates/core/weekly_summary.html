@@ -4,41 +4,50 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="page-title">
-    Weekly Summary ({{ start_date }} - {{ end_date }})
+    Weekly Summary ({{ start_date|date:"M. j, Y" }} - {{ end_date|date:"M. j, Y" }})
   </h2>
 
   <div class="table-wrapper">
     <table class="custom-table">
       <thead>
         <tr>
-          <th>Recipient</th>
-          {% for day in summary.0.meals %}
-            <th colspan="{{ meal_types|length }}">
-              {{ start_date|date:"d/m" |add:forloop.counter0 }}
+          <th rowspan="2" class="day-header">Day</th>
+          <th rowspan="2" class="date-header">Date</th>
+          {% for recipient in recipients %}
+            <th colspan="{{ meal_types|length }}" class="recipient-header">
+              {{ recipient.name }}
             </th>
           {% endfor %}
-          <th>Total</th>
+          <th rowspan="2" class="total-header">Daily Total</th>
         </tr>
+        
         <tr>
-          <th></th>
-          {% for day in summary.0.meals %}
-            {% for code,label in meal_types.items %}
-              <th>{{ code }}</th>
+          {% for recipient in recipients %}
+            {% for code, label in meal_types.items %}
+              <th class="meal-type-header">{{ label|slice:":1" }}</th>
             {% endfor %}
           {% endfor %}
-          <th></th>
         </tr>
       </thead>
       <tbody>
-        {% for row in summary %}
+        {% for day in days %}
           <tr>
-            <td class="recipient">{{ row.recipient }}</td>
-            {% for day_data in row.meals %}
-              {% for code,label in meal_types.items %}
-                <td>{{ day_data|get_item:code }}</td>
+            <td class="day-name">{{ day.date|date:"D" }}</td>
+            <td class="date">{{ day.date|date:"M j" }}</td>
+            
+            {% for recipient in recipients %}
+              {% for code, label in meal_types.items %}
+                <td class="meal-quantity">
+                  {% with day_index=forloop.parentloop.parentloop.counter0 %}
+                    {% with recipient_name=recipient.name %}
+                      {{ summary|get_item:recipient_name|get_item:day_index|get_item:code }}
+                    {% endwith %}
+                  {% endwith %}
+                </td>
               {% endfor %}
             {% endfor %}
-            <td class="total">{{ row.total }}</td>
+            
+            <td class="daily-total">{{ daily_totals|get_item:forloop.counter0 }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -46,9 +55,8 @@
   </div>
 
   <div class="back-link">
-  <a href="{% url 'dashboard' %}"
-   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
-   Back to Dashboard
+    <a href="{% url 'dashboard' %}" class="btn-back">
+      Back to Dashboard
     </a>
   </div>
 </div>
@@ -81,6 +89,7 @@
     border-collapse: collapse;
     text-align: center;
     font-size: 0.95rem;
+    min-width: 800px;
   }
 
   .custom-table thead th {
@@ -88,27 +97,68 @@
     color: white;
     padding: 12px 8px;
     font-weight: 600;
-    text-transform: uppercase;
-    border-bottom: 2px solid #ddd;
+    border: 1px solid #ddd;
+  }
+
+  .day-header {
+    background: #2a7f7f !important;
+  }
+
+  .date-header {
+    background: #2a7f7f !important;
+  }
+
+  .recipient-header {
+    background: #3a9a9a !important;
+    font-size: 0.9rem;
+  }
+
+  .meal-type-header {
+    background: #30aac9 !important;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .total-header {
+    background: #2a7f7f !important;
   }
 
   .custom-table tbody td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    padding: 10px 8px;
+    border: 1px solid #e0e0e0;
   }
 
   .custom-table tbody tr:hover {
     background: #f9fafc;
   }
 
-  .recipient {
+  .day-name {
     font-weight: 600;
-    text-align: left;
+    background: #f8f9fa;
+    border-right: 2px solid #ddd;
   }
 
-  .total {
+  .date {
+    font-weight: 500;
+    background: #f8f9fa;
+    border-right: 2px solid #ddd;
+  }
+
+  .meal-quantity {
+    font-weight: 500;
+  }
+
+  .meal-quantity.has-meal {
+    background: #e8f5e8;
+    font-weight: 600;
+    color: #2e7d32;
+  }
+
+  .daily-total {
     font-weight: 700;
     color: #30aac9;
+    background: #f0f9ff;
+    border-left: 2px solid #ddd;
   }
 
   .btn-back {
@@ -125,10 +175,21 @@
 
   .btn-back:hover {
     background: #2695af;
+    text-decoration: none;
+    color: white;
   }
 
   .back-link {
     text-align: center;
+  }
+
+  /* Recipient separators */
+  .custom-table tbody td:nth-child({{ meal_types|length|add:"2" }}n + 3) {
+    border-left: 2px solid #ccc;
+  }
+
+  .custom-table thead th:nth-child({{ meal_types|length|add:"2" }}n + 3) {
+    border-left: 2px solid #fff;
   }
 </style>
 {% endblock %}

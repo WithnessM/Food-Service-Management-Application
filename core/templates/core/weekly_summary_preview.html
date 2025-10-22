@@ -1,38 +1,86 @@
-<h2>Weekly Summary for {{ month_name }} ({{ date_range }})</h2>
+{% extends "base.html" %}
+{% block content %}
 
-{% if meals %}
-<table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Meal Category</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for meal in meals %}
-        <tr>
-            <td>{{ meal.mealDate|date:"D, d M Y" }}</td>
-            <td>{{ meal.mealCategory }}</td>
-            <td>{{ meal.quantity }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Weekly Summary Preview ({{ date_range }})</h4>
+        </div>
+        
+        <div class="card-body">
+            {% if meals %}
+            <div class="mb-3">
+                <p><strong>Total Records:</strong> {{ meals|length }} meals</p>
+                <p><strong>Week:</strong> {{ week }} of {{ year }}</p>
+            </div>
 
-<!-- Export button -->
-<p>
-    <a href="{% url 'export_weekly_excel' year=year week=week %}" 
-        style="display:inline-block; padding:5px 10px; background-color:green; color:white; text-decoration:none; border-radius:4px;">
-        Download Excel document
-    </a>
-</p>
-{% else %}
-<p>No data available for this week.</p>
-{% endif %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Recipient</th>
+                            <th>Meal Type</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for meal in meals %}
+                        <tr>
+                            <td>{{ meal.mealDate|date:"M j, Y" }}</td>
+                            <td><strong>{{ meal.mealsFor.name }}</strong></td>
+                            <td>{{ meal.get_mealCategory_display }}</td>
+                            <td class="fw-bold">{{ meal.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-  <a href="{% url 'dashboard' %}"
-   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
-   Back to Dashboard
-    </a>
-    
+            <div class="mt-4 p-3 bg-light rounded">
+                <div class="text-center">
+                    <p class="mb-2">Ready to download the full report?</p>
+                    <a href="{% url 'export_weekly_excel' year=year week=week %}" 
+                       class="btn btn-success btn-lg">
+                        Download Excel Report
+                    </a>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">No meal records found for this week.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-3 text-center">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 8px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.btn-success {
+    background-color: #30aac9;
+    border-color: #30aac9;
+}
+
+.btn-success:hover {
+    background-color: #2695af;
+    border-color: #2695af;
+}
+</style>
+{% endblock %}

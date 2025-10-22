@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-3 text-center">Form H – Monthly Ration Allowance & Usage Summary</h2>
+    <h5 class="text-center text-muted">{{ month_name }} {{ year }}</h5>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Category</th>
+                    <th>Week 1</th>
+                    <th>Week 2</th>
+                    <th>Week 3</th>
+                    <th>Week 4</th>
+                    <th>Week 5</th>
+                    <th>Total Usage</th>
+                    <th>Adjusted Total</th>
+                    <th>Avg per Person / Day</th>
+                    <th>Min Allowance</th>
+                    <th>Max Allowance</th>
+                    <th>Unit / Per</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                    {% with allowance=entry.category.rationallowance_set.first %}
+                    <tr>
+                        <td>{{ entry.category.description }}</td>
+                        <td>{{ entry.week1_usage }}</td>
+                        <td>{{ entry.week2_usage }}</td>
+                        <td>{{ entry.week3_usage }}</td>
+                        <td>{{ entry.week4_usage }}</td>
+                        <td>{{ entry.week5_usage }}</td>
+                        <td>{{ entry.total_usage }}</td>
+                        <td>{{ entry.adjusted_total_usage }}</td>
+
+                        <!-- Highlight out-of-range averages -->
+                        {% if allowance %}
+                            {% if entry.avg_per_person_per_day < allowance.min_allowance or entry.avg_per_person_per_day > allowance.max_allowance %}
+                                <td class="text-danger fw-bold">{{ entry.avg_per_person_per_day }}</td>
+                                <td>{{ allowance.min_allowance }}</td>
+                                <td>{{ allowance.max_allowance }}</td>
+                                <td>{{ allowance.unit }}/{{ allowance.per }}</td>
+                                <td><span class="badge bg-danger">Out of Range</span></td>
+                            {% else %}
+                                <td>{{ entry.avg_per_person_per_day }}</td>
+                                <td>{{ allowance.min_allowance }}</td>
+                                <td>{{ allowance.max_allowance }}</td>
+                                <td>{{ allowance.unit }}/{{ allowance.per }}</td>
+                                <td><span class="badge bg-success">OK</span></td>
+                            {% endif %}
+                        {% else %}
+                            <td>{{ entry.avg_per_person_per_day }}</td>
+                            <td colspan="3"><em>n/a</em></td>
+                            <td><span class="badge bg-secondary">No Allowance</span></td>
+                        {% endif %}
+                    </tr>
+                    {% endwith %}
+                {% empty %}
+                    <tr>
+                        <td colspan="13" class="text-center text-muted">No data available for this month.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+        <a href="{% url 'form_h_export_excel' year=year month=month %}" class="btn btn-primary ms-2">Export to Excel</a>
+    </div>
+</div>
+{% endblock %}

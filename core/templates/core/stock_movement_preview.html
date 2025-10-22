@@ -1,7 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
 <h2>Stock Movement Preview</h2>
 
 {% if movements %}
-<table border="1" cellpadding="5" cellspacing="0">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Week Number</th>
@@ -29,7 +32,7 @@
 </table>
 
 <h3>Totals per Category</h3>
-<table border="1" cellpadding="5" cellspacing="0">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Category</th>
@@ -53,7 +56,7 @@
 </table>
 
 <h3>Grand Total</h3>
-<table border="1" cellpadding="5" cellspacing="0">
+<table class="table table-bordered table-striped">
     <tr>
         <th>Total Received</th>
         <th>Total Issued</th>
@@ -68,11 +71,10 @@
     </tr>
 </table>
 
-<!-- Export button inside the preview page -->
 <p>
     <a href="{% url 'export_stock_excel' %}" 
-        style="display:inline-block; padding:5px 10px; background-color:green; color:white; text-decoration:none; border-radius:4px;">
-        Download Excel document
+       class="btn btn-success">
+       Download Excel document
     </a>
 </p>
 
@@ -80,7 +82,9 @@
 <p>No stock movement data available.</p>
 {% endif %}
 
-<a href="{% url 'dashboard' %}"
+  <a href="{% url 'dashboard' %}"
    style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
    Back to Dashboard
-</a>
+   </a>
+
+{% endblock %}

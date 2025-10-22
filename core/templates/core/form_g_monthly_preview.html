@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Form G – Financial Summary: {{ month_name }} {{ year }}</h2>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Annual Budget</th>
+      <th>Monthly Budget</th>
+      <th>Week 1</th>
+      <th>Week 2</th>
+      <th>Week 3</th>
+      <th>Week 4</th>
+      <th>Week 5</th>
+      <th>Expense for Month</th>
+      <th>Underspent</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.category.categoryName }}</td>
+      <td>{{ entry.annual_budget }}</td>
+      <td>{{ entry.monthly_budget }}</td>
+      <td>{{ entry.week1_expense }}</td>
+      <td>{{ entry.week2_expense }}</td>
+      <td>{{ entry.week3_expense }}</td>
+      <td>{{ entry.week4_expense }}</td>
+      <td>{{ entry.week5_expense }}</td>
+      <td>{{ entry.expense_for_month }}</td>
+      <td>
+        {% if entry.underspent < 0 %}
+          <span class="text-danger">{{ entry.underspent }}</span>
+        {% else %}
+          <span class="text-success">{{ entry.underspent }}</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="10" class="text-center">No data available.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'export_form_g_monthly_excel' year=year month=month %}" class="btn btn-success">Export to Excel</a>
+
+
+    <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+
+{% endblock %}

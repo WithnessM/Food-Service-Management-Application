@@ -1,10 +1,9 @@
-{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
 <style>
     .sidebar {
-        width: 250px;
+        width: 280px;
         background-color: rgb(45, 126, 151);
         position: fixed;
         top: 0;
@@ -17,93 +16,194 @@
     .sidebar a {
         display: block;
         color: white;
-        padding: 10px;
+        padding: 10px 15px;
         text-decoration: none;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
     }
 
     .sidebar a:hover {
         background-color: #003f75;
+        transform: translateX(5px);
     }
 
     .main-content {
-        margin-left: 260px; 
-        padding: 20px;
+        margin-left: 300px; 
+        padding: 30px;
+        background: #f8f9fa;
+        min-height: 100vh;
     }
 
-    h4 {
-        color: rgb(93, 166, 235);
-        margin-top: 15px;
+    .section-title {
+        color: white;
+        margin: 20px 0 10px 0;
+        padding-bottom: 5px;
+        border-bottom: 2px solid rgb(93, 166, 235);
+        font-size: 1.1rem;
+        font-weight: bold;
     }
 
     .spacer {
-        margin-top: 10px; 
+        margin-top: 15px; 
     }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2a7f7f;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .quick-actions {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .btn-dashboard {
+        background: #30aac9;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        transition: background 0.3s ease;
+    }
+
+    .btn-dashboard:hover {
+        background: #2695af;
+        color: white;
+        text-decoration: none;
+    }
+      body {
+           
+            font-family: Arial, sans-serif;
+           
+        }
+
 </style>
 
 <div class="sidebar">
+    <!-- Dashboard Header -->
     <a href="{% url 'dashboard' %}" style="
         background-color: rgb(68, 156, 190);
         color: #000;
         font-weight: bold;
         border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
         display: block;
         text-align: center;
         box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
+        font-size: 1.2rem;
     ">Dashboard</a>
 
+    <!-- Meal Management -->
+    <div class="section-title">Meal Management</div>
     <a href="{% url 'recipients_list' %}">Add/View Meal Recipients</a>
     <a href="{% url 'meals_list' %}">Add/View Meals</a>
+    <a href="{% url 'weekly_meals' %}">Weekly Meal Entry</a>
 
     <div class="spacer"></div>
 
-    <a href="{% url 'weekly_summary' year=2025 week=36 %}" class="btn btn-secondary">View Week Summary</a>
-    <a href="{% url 'monthly_summary_select' %}">View Monthly Summary</a>
+
+
+    <!-- Stock Management -->
+    <div class="section-title">Stock Management</div>
+    <a href="{% url 'categories' %}">Add/View Categories</a>
+    <a href="{% url 'stock_list' %}">Add/View Stock Items</a>
+    <a href="{% url 'stock_movement_list' %}">Add/View Stock Movements</a>
+    
 
     <div class="spacer"></div>
 
-    <a href="{% url 'categories' %}"> Add/View Categories</a>
-    <a href="{% url 'stock_list' %}"> Add/View Stock Items</a>
-    <a href="{% url 'stock_movement_list' %}"> Add/View Stock Movements</a>
+     <!-- FORM G -->
+    <div class="section-title">Budget & Expenses &</div>
+    
+    <a href="{% url 'form_g_add' %}">Add New Record</a>
+    <a href="{% url 'form_g_list' %}">View Records</a>
+
+    <!-- FORM H -->
+     <div class="section-title">Ration Allowance</div>
+    
+    <a href="{% url 'formh_summary' year=year month=month %}">Usage Summary</a>
 
     <div class="spacer"></div>
 
-    <h2>{{ reports }}</h2>
+    <!-- Report Previews -->
+    <div class="section-title">Report Previews</div>
 
-    <!-- Weekly Report -->
+    <!-- Weekly Reports -->
     {% if week %}
-    <p>
-        <a href="{% url 'weekly_summary_preview' year=year week=week %}">
-        Preview Weekly Summary
-        </a>
-    </p>
-    {% else %}
-    <p>No weekly data available.</p>
+    <a href="{% url 'weekly_summary_preview' year=year week=week %}">
+        FORM S1 (Weekly Meals)
+    </a>
     {% endif %}
 
-    <!-- Monthly Report -->
+    <!-- Monthly Reports -->
     {% if month %}
-    <p>
-        <a href="{% url 'monthly_summary_preview' year=year month=month %}">
-        Preview Monthly Summary
-        </a>
-    </p>
-    {% else %}
-    <p>No monthly data available.</p>
+    <a href="{% url 'monthly_summary_preview' year=year month=month %}">
+        FORM S2 (Monthly Summary)
+    </a>
+    <a href="{% url 'stock_movement_preview' %}"> 
+        FORM E & F (Stock Movement)
+    </a>
+    <a href="{% url 'form_g_monthly_preview' year=year month=month %}">
+        FORM G (Budget & Expenses)
+    </a>
+    <a href="{% url 'form_h_preview' year=year month=month %}">
+        FORM H (Ration Usage)
+    </a>
     {% endif %}
 
-    <a href="{% url 'stock_movement_preview' %}"> 
-        Preview Stock Movement 
+    <!-- Annual Report -->
+    <a href="{% url 'annual_summary_current' %}">
+        FORM X (Annual Summary)
     </a>
 
+    <div class="spacer"></div>
+
+    <!-- Logout -->
     <a href="{% url 'logout' %}" style="
         background-color: rgb(68, 156, 190);
         color: #000;
         font-weight: bold;
         border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: 15px;
+        margin-top: 30px;
         display: block;
         text-align: center;
         box-shadow: 2px 2px 5px rgba(62, 31, 240, 0.63);
@@ -111,8 +211,52 @@
 </div>
 
 <div class="main-content">
-    <div style="text-align: center;">
-        <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="600">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1>Welcome to FSMA Dashboard</h1>
+        <p class="text-muted">Food Service Management System</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+           
+            <div class="stat-label">Meal Recipients</div>
+             <div class="stat-number">{{ total_recipients }}</div>
+        </div>
+        <div class="stat-card">
+            
+            <div class="stat-label">Today's Meals</div>
+            <div class="stat-number">{{ today_meals }}</div>
+        </div>
+        <div class="stat-card">
+            
+            <div class="stat-label">Current Week</div>
+            <div class="stat-number">{{ week }}</div>
+        </div>
+        <div class="stat-card">
+            
+            <div class="stat-label">Current Month</div>
+            <div class="stat-number">{{ month_name }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div style="margin-top: 15px;">
+            <a href="{% url 'weekly_meals' %}" class="btn-dashboard">Enter Weekly Meals</a>
+            <a href="{% url 'stock_movement_add' %}" class="btn-dashboard">Record Stock Movement</a>
+            <a href="{% url 'form_g_add' %}" class="btn-dashboard">Add Budget Record</a>
+            <a href="{% url 'annual_summary_current' %}" class="btn-dashboard">View Annual Report</a>
+        </div>
+    </div>
+
+  
+
+    <!-- Main Image -->
+    <div style="text-align: center; margin-top: 30px;">
+        <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="400" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
     </div>
 </div>
 {% endblock %}

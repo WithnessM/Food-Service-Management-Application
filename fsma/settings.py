@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get(
     'django-insecure-bead6^4d2t9%!%gv*@d!jr+b56mpi2@9cuwhs2vhwx#z$*^%5+'
 )
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 
 
@@ -67,8 +67,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fsma.wsgi.application'
 # Database configuration
 
+USE_LOCAL_DB = config('USE_LOCAL_DB', default=False, cast=bool)
 
+if USE_LOCAL_DB:
+    # Local database SQLite 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    # Fo the Cloud database (PostgreSQL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT', cast=int),
+        }
+    }
 
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -79,7 +101,7 @@ DATABASES = {
         'PORT': config('DB_PORT', cast=int),
     }
 }
-
+'''
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,3 +136,6 @@ AUTHENTICATION_BACKENDS = [
     'core.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

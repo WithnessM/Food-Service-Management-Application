@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">FORM X - Annual Summary {{ year }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            
+                            <p>Total Meals</p>
+                            <h5 class="text-primary">{{ total_meals }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                           
+                            <p>Total Expenses</p>
+                             <h5 class="text-success">R{{ total_expenses|floatformat:2 }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            
+                            <p>Total Budget</p>
+                            <h5 class="text-info">R{{ total_budget|floatformat:2 }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                           
+                            <p>Cost per Meal</p>
+                             <h5 class="text-warning">R{{ avg_cost_per_meal|floatformat:2 }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5>Monthly Breakdown</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Meals Served</th>
+                        <th>Expenses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for month in monthly_breakdown %}
+                    <tr>
+                        <td>{{ month.month_name }}</td>
+                        <td>{{ month.meals }}</td>
+                        <td>R{{ month.expenses|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+  <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</div>
+{% endblock %}

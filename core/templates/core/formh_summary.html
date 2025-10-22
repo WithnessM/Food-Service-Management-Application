@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Form H – Monthly Ration Allowance and Usage Summary</h2>
+    <h5 class="text-center text-muted">
+        Month: {{ month }} / {{ year }}
+    </h5>
+
+    <table class="table table-bordered table-striped mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Category</th>
+                <th>Week 1</th>
+                <th>Week 2</th>
+                <th>Week 3</th>
+                <th>Week 4</th>
+                <th>Week 5</th>
+                <th>Total Usage</th>
+                <th>Adjusted Usage</th>
+                <th>Avg per Person / Day</th>
+                <th>Allowance Range</th>
+                <th>Unit</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for entry in entries %}
+                {% with h=entry.formh a=entry.allowance %}
+                <tr>
+                    <td>{{ h.category.description }}</td>
+                    <td>{{ h.week1_usage }}</td>
+                    <td>{{ h.week2_usage }}</td>
+                    <td>{{ h.week3_usage }}</td>
+                    <td>{{ h.week4_usage }}</td>
+                    <td>{{ h.week5_usage }}</td>
+                    <td>{{ h.total_usage }}</td>
+                    <td>{{ h.adjusted_total_usage }}</td>
+
+                    <!-- Highlight out-of-range averages in red -->
+                    <td class="{% if entry.out_of_range %}text-danger fw-bold{% endif %}">
+                        {{ h.avg_per_person_per_day }}
+                    </td>
+
+                    <td>
+                        {% if a %}
+                            {{ a.min_allowance }} – {{ a.max_allowance }}
+                        {% else %}
+                            <em>n/a</em>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if a %}{{ a.unit }}/{{ a.per }}{% else %}<em>n/a</em>{% endif %}
+                    </td>
+
+                    <td>
+                        {% if entry.out_of_range %}
+                            <span class="badge bg-danger">Out of Range</span>
+                        {% else %}
+                            <span class="badge bg-success">OK</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endwith %}
+            {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center text-muted">
+                        No data found for this month.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+
+
+
+
+</div>
+{% endblock %}
