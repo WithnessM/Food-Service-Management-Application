@@ -4,8 +4,8 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Meal Records</h2>
-        <a href="{% url 'weekly_meals' %}" class="btn btn-primary">
-            Weekly Meal Entry
+        <a href="{% url 'meal_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Meal
         </a>
     </div>
 
@@ -19,6 +19,7 @@
                     <th>Meal Type</th>
                     <th>Quantity</th>
                     <th>Week</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,16 @@
                     <td>{{ meal.get_mealCategory_display }}</td>
                     <td>{{ meal.quantity }}</td>
                     <td>Week {{ meal.weekStart|date:"W" }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'meal_edit' meal.pk %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'meal_delete' meal.pk %}" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -63,8 +74,8 @@
     {% else %}
     <div class="text-center py-5">
         <p class="text-muted">No meal records found.</p>
-        <a href="{% url 'weekly_meals' %}" class="btn btn-primary">
-            Start Weekly Meal Entry
+        <a href="{% url 'meal_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Your First Meal
         </a>
     </div>
     {% endif %}

@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from datetime import date, datetime, timedelta  # ADDED timedelta import
+from datetime import date, datetime, timedelta
 
 from .models import (
     Meals, MonthlySummary, MealRecipient,
@@ -8,9 +8,9 @@ from .models import (
     FormG, FormH
 )
 
-
 # Meals Forms
 
+# Add this to your forms.py
 class MealsForm(forms.ModelForm):
     """Form for creating/editing a single meal entry"""
     
@@ -42,61 +42,44 @@ class MealsForm(forms.ModelForm):
 
         return cleaned_data
 
-
 class WeeklyMealsForm(forms.Form):
-    """Form for entering meals for a whole week with pre-filled data"""
+    """Form for entering meals for a whole week for one recipient"""
   
     weekStart = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+        widget=forms.DateInput(attrs={
+            "type": "date", 
+            "class": "form-control",
+            "id": "weekStartField",
+        }),
         label="Week Starting"
     )
 
     def __init__(self, *args, **kwargs):
+        # Extract the recipient parameter
+        recipient = kwargs.pop('recipient', None)
         super().__init__(*args, **kwargs)
         
-        # Create fields for each day, recipient and meal type
-        recipients = MealRecipient.objects.all()
+        # Create fields only for the specified recipient
         meal_types = Meals.CATEGORY_CHOICES
         
-        # Get the week start date if provided
-        week_start = None
-        if self.initial.get('weekStart'):
-            week_start = self.initial['weekStart']
-        elif self.data.get('weekStart'):
-            try:
-                week_start = datetime.strptime(self.data.get('weekStart'), '%Y-%m-%d').date()
-            except (ValueError, TypeError):
-                pass
-        
-        for day in range(7):
-            for recipient in recipients:
+        if recipient:
+            for day in range(7):
                 for code, label in meal_types:
                     field_name = f"{day}_{recipient.id}_{code}"
                     
-                    # Set initial value if we have existing data
-                    initial_value = 0
-                    if week_start:
-                        meal_date = week_start + timedelta(days=day)  # FIXED: Now timedelta is imported
-                        existing_meal = Meals.objects.filter(
-                            mealDate=meal_date,
-                            mealsFor=recipient,
-                            mealCategory=code,
-                            weekStart=week_start,
-                            weekEnd=week_start + timedelta(days=6)  # FIXED: Now timedelta is imported
-                        ).first()
-                        if existing_meal:
-                            initial_value = existing_meal.quantity
+                    # Set initial value from initial data
+                    initial_value = self.initial.get(field_name, 0)
                     
                     self.fields[field_name] = forms.IntegerField(
                         required=False,
                         min_value=0,
                         initial=initial_value,
                         widget=forms.NumberInput(attrs={
-                            "class": "form-control", 
+                            "class": "form-control meal-quantity", 
                             "min": 0,
-                            "style": "max-width: 80px;"
+                            "placeholder": "0"
                         }),
-                        label=f"Day {day+1} - {recipient.name} - {label}",
+                        label="",
                     )
 
     def clean_weekStart(self):
@@ -104,14 +87,14 @@ class WeeklyMealsForm(forms.Form):
         if week_start > date.today():
             raise ValidationError("Week start date cannot be in the future.")
         return week_start
-
-
+    
+# ADD THE MISSING MonthlySummaryForm
 class MonthlySummaryForm(forms.ModelForm):
     """Form for monthly summary"""
     
     class Meta:
         model = MonthlySummary
-        fields = ["month", "year"]
+        fields = ["month", "year", "totalMeals"]
         widgets = {
             "month": forms.NumberInput(attrs={
                 "min": 1, "max": 12, "class": "form-control",
@@ -120,6 +103,10 @@ class MonthlySummaryForm(forms.ModelForm):
             "year": forms.NumberInput(attrs={
                 "min": 2000, "max": 2100, "class": "form-control",
                 "placeholder": "Year"
+            }),
+            "totalMeals": forms.NumberInput(attrs={
+                "min": 0, "class": "form-control",
+                "placeholder": "Total Meals"
             }),
         }
 

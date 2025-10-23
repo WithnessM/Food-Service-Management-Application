@@ -1,33 +1,66 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>{{ form_title }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            {{ form.weekStart.label_tag }} {{ form.weekStart }}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ form_title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Recipient</label>
+                                    {{ form.mealsFor }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Meal Date</label>
+                                    {{ form.mealDate }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Meal Type</label>
+                                    {{ form.mealCategory }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Quantity</label>
+                                    {{ form.quantity }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Week Start</label>
+                                    {{ form.weekStart }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Week End</label>
+                                    {{ form.weekEnd }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'meals_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Meal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            {{ form.weekEnd.label_tag }} {{ form.weekEnd }}
-        </div>
-        <div class="mb-3">
-            {{ form.mealDate.label_tag }} {{ form.mealDate }}
-        </div>
-        <div class="mb-3">
-            {{ form.mealCategory.label_tag }} {{ form.mealCategory }}
-        </div>
-        <div class="mb-3">
-            {{ form.mealsFor.label_tag }} {{ form.mealsFor }}
-        </div>
-        <div class="mb-3">
-            {{ form.quantity.label_tag }} {{ form.quantity }}
-        </div>
-        <button type="submit" class="btn btn-success">Save</button>
-        <a href="{% url 'meals_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    </div>
 </div>
-<a href="{% url 'dashboard' %}"
-   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
-   Back to Dashboard
-</a>
 {% endblock %}

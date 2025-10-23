@@ -37,14 +37,14 @@
                 </table>
             </div>
 
-            <div class="mt-4 p-3 bg-light rounded">
+        
                 <div class="text-center">
-                    <p class="mb-2">Ready to download the full report?</p>
+                   
                     <a href="{% url 'export_weekly_excel' year=year week=week %}" 
                        class="btn btn-success btn-lg">
                         Download Excel Report
                     </a>
-                </div>
+              
             </div>
 
             {% else %}
@@ -55,11 +55,13 @@
         </div>
     </div>
 
-    <div class="mt-3 text-center">
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-            ← Back to Dashboard
-        </a>
-    </div>
+            <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
+
+
+
 </div>
 
 <style>
@@ -74,7 +76,7 @@
 }
 
 .btn-success {
-    background-color: #30aac9;
+    background-color: #ffffffff;
     border-color: #30aac9;
 }
 

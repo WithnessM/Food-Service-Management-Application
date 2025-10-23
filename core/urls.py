@@ -12,6 +12,7 @@ urlpatterns = [
     path('home/', login_required(views.home), name='home'),
     path('dashboard/', login_required(views.dashboard), name='dashboard'),
 
+    # Password reset URLs
     path('password_reset/', 
          auth_views.PasswordResetView.as_view(template_name='core/password_reset.html'),
          name='password_reset'),
@@ -25,11 +26,11 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(template_name='core/password_reset_complete.html'),
          name='password_reset_complete'),
 
-    # Meals - Keep only list view and remove individual CRUD
+    # Simple Meal CRUD
     path("meals/", login_required(views.MealListView.as_view()), name="meals_list"),
-    # REMOVED: path("meals/add/", login_required(views.MealCreateView.as_view()), name="meal_create"),
-    # REMOVED: path("meals/<int:pk>/edit/", login_required(views.MealUpdateView.as_view()), name="meal_update"),
-    # REMOVED: path("meals/<int:pk>/delete/", login_required(views.MealDeleteView.as_view()), name="meal_delete"),
+    path("meals/add/", login_required(views.MealCreateView.as_view()), name="meal_create"),
+    path("meals/<int:pk>/edit/", login_required(views.MealUpdateView.as_view()), name="meal_edit"),
+    path("meals/<int:pk>/delete/", login_required(views.MealDeleteView.as_view()), name="meal_delete"),
 
     # Recipients
     path("recipients/", login_required(views.RecipientListView.as_view()), name="recipients_list"),
@@ -37,13 +38,11 @@ urlpatterns = [
     path("recipients/<int:pk>/edit/", login_required(views.RecipientUpdateView.as_view()), name="recipient_update"),
     path("recipients/<int:pk>/delete/", login_required(views.RecipientDeleteView.as_view()), name="recipient_delete"),
 
-    # Weekly Meals & Summaries 
-    path("meals/weekly/", login_required(views.weekly_meals), name="weekly_meals"),
+    # Weekly & Monthly Summaries (read-only)
     path("meals/weekly/<int:year>/<int:week>/", login_required(views.weekly_summary), name="weekly_summary"),
-
-    # Monthly Summaries 
     path("meals/monthly/<int:year>/<int:month>/", login_required(views.monthly_summary), name="monthly_summary"),
     path("meals/monthly/select/", login_required(views.monthly_summary_select), name="monthly_summary_select"),
+
 
     # Categories 
     path("categories/", login_required(views.category_list), name="categories"),
@@ -104,4 +103,5 @@ urlpatterns = [
     path('annual-summary/<int:year>/', login_required(views.annual_summary), name='annual_summary'),
     path('annual-summary/', login_required(views.annual_summary), name='annual_summary_current'),
     path('stock-variance-report/', login_required(views.stock_variance_report), name='stock_variance_report'),
+    path('annual-summary/<int:year>/export/', views.export_annual_summary_excel, name='export_annual_summary_excel'),
 ]

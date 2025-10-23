@@ -30,31 +30,31 @@
                     {% with allowance=entry.category.rationallowance_set.first %}
                     <tr>
                         <td>{{ entry.category.description }}</td>
-                        <td>{{ entry.week1_usage }}</td>
-                        <td>{{ entry.week2_usage }}</td>
-                        <td>{{ entry.week3_usage }}</td>
-                        <td>{{ entry.week4_usage }}</td>
-                        <td>{{ entry.week5_usage }}</td>
-                        <td>{{ entry.total_usage }}</td>
-                        <td>{{ entry.adjusted_total_usage }}</td>
+                        <td>R{{ entry.week1_usage }}</td>
+                        <td>R{{ entry.week2_usage }}</td>
+                        <td>R{{ entry.week3_usage }}</td>
+                        <td>R{{ entry.week4_usage }}</td>
+                        <td>R{{ entry.week5_usage }}</td>
+                        <td>R{{ entry.total_usage }}</td>
+                        <td>R{{ entry.adjusted_total_usage }}</td>
 
-                        <!-- Highlight out-of-range averages -->
+              
                         {% if allowance %}
                             {% if entry.avg_per_person_per_day < allowance.min_allowance or entry.avg_per_person_per_day > allowance.max_allowance %}
-                                <td class="text-danger fw-bold">{{ entry.avg_per_person_per_day }}</td>
-                                <td>{{ allowance.min_allowance }}</td>
-                                <td>{{ allowance.max_allowance }}</td>
+                                <td class="text-danger fw-bold">R{{ entry.avg_per_person_per_day }}</td>
+                                <td>R{{ allowance.min_allowance }}</td>
+                                <td>R{{ allowance.max_allowance }}</td>
                                 <td>{{ allowance.unit }}/{{ allowance.per }}</td>
                                 <td><span class="badge bg-danger">Out of Range</span></td>
                             {% else %}
-                                <td>{{ entry.avg_per_person_per_day }}</td>
-                                <td>{{ allowance.min_allowance }}</td>
-                                <td>{{ allowance.max_allowance }}</td>
+                                <td>R{{ entry.avg_per_person_per_day }}</td>
+                                <td>R{{ allowance.min_allowance }}</td>
+                                <td>R{{ allowance.max_allowance }}</td>
                                 <td>{{ allowance.unit }}/{{ allowance.per }}</td>
                                 <td><span class="badge bg-success">OK</span></td>
                             {% endif %}
                         {% else %}
-                            <td>{{ entry.avg_per_person_per_day }}</td>
+                            <td>R{{ entry.avg_per_person_per_day }}</td>
                             <td colspan="3"><em>n/a</em></td>
                             <td><span class="badge bg-secondary">No Allowance</span></td>
                         {% endif %}
@@ -69,12 +69,15 @@
         </table>
     </div>
 
-    <div class="text-center mt-4">
-        <a href="{% url 'dashboard' %}"
-   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
-   Back to Dashboard
-</a>
-        <a href="{% url 'form_h_export_excel' year=year month=month %}" class="btn btn-primary ms-2">Export to Excel</a>
+
+        <a href="{% url 'form_h_export_excel' year=year month=month %}"  class="btn btn-success">Export to Excel</a>
     </div>
 </div>
+
+        <div class="card-footer text-center">
+            <a href="{% url 'dashboard' %}"
+               style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+               Back to Dashboard
+            </a>
+        </div>
 {% endblock %}

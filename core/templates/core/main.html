@@ -117,9 +117,9 @@
 </style>
 
 <div class="sidebar">
-    <!-- Dashboard Header -->
+
     <a href="{% url 'dashboard' %}" style="
-        background-color: rgb(68, 156, 190);
+        background-color: rgba(255, 255, 255, 1);
         color: #000;
         font-weight: bold;
         border-radius: 8px;
@@ -135,7 +135,7 @@
     <div class="section-title">Meal Management</div>
     <a href="{% url 'recipients_list' %}">Add/View Meal Recipients</a>
     <a href="{% url 'meals_list' %}">Add/View Meals</a>
-    <a href="{% url 'weekly_meals' %}">Weekly Meal Entry</a>
+ 
 
     <div class="spacer"></div>
 
@@ -150,13 +150,13 @@
 
     <div class="spacer"></div>
 
-     <!-- FORM G -->
+     <!-- Budget & Expenses -->
     <div class="section-title">Budget & Expenses &</div>
     
     <a href="{% url 'form_g_add' %}">Add New Record</a>
     <a href="{% url 'form_g_list' %}">View Records</a>
 
-    <!-- FORM H -->
+    <!-- Ration Allowance -->
      <div class="section-title">Ration Allowance</div>
     
     <a href="{% url 'formh_summary' year=year month=month %}">Usage Summary</a>
@@ -196,9 +196,9 @@
 
     <div class="spacer"></div>
 
-    <!-- Logout -->
+    
     <a href="{% url 'logout' %}" style="
-        background-color: rgb(68, 156, 190);
+        background-color: rgba(255, 255, 255, 1);
         color: #000;
         font-weight: bold;
         border-radius: 8px;
@@ -245,16 +245,15 @@
     <div class="quick-actions">
         <h3>Quick Actions</h3>
         <div style="margin-top: 15px;">
-            <a href="{% url 'weekly_meals' %}" class="btn-dashboard">Enter Weekly Meals</a>
-            <a href="{% url 'stock_movement_add' %}" class="btn-dashboard">Record Stock Movement</a>
-            <a href="{% url 'form_g_add' %}" class="btn-dashboard">Add Budget Record</a>
-            <a href="{% url 'annual_summary_current' %}" class="btn-dashboard">View Annual Report</a>
+            <a href="{% url 'meals_list' %}"  class="btn-dashboard">Add/View Meals</a>       
+            <a href="{% url 'stock_movement_add' %}" class="btn-dashboard"   >Record Stock Movement</a>
+            <a href="{% url 'form_g_add' %}" class="btn-dashboard">    Add Budget Record</a>
+            <a href="{% url 'annual_summary_current' %}" class="btn-dashboard">  View Annual Report</a>
         </div>
     </div>
 
   
 
-    <!-- Main Image -->
     <div style="text-align: center; margin-top: 30px;">
         <img src="{% static 'images/coat-of-arms.jpg' %}" alt="Coat of Arms" width="400" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
     </div>

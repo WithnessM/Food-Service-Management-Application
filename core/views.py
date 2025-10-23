@@ -10,23 +10,24 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.contrib import messages
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
+
 
 from .models import (
     Meals, MealRecipient, MonthlySummary,
     Category, StockItem, WeeklyStockMovement,
-    FormG, FormH, RationAllowance, Expenses
+    FormG, FormH, RationAllowance
 )
 from .forms import (
-    MealsForm, WeeklyMealsForm, MonthlySummaryForm,
+    MealsForm, 
+    
     CategoryForm, StockItemForm, WeeklyStockMovementForm,
-    FormGForm, FormHForm
+    FormGForm
 )
 
 
@@ -84,6 +85,8 @@ def home(request):
     return render(request, 'core/home.html')
 
 
+
+# Meal Views
 # Meal Views
 class MealListView(ListView):
     model = Meals
@@ -92,106 +95,101 @@ class MealListView(ListView):
     ordering = ["-mealDate"]
     paginate_by = 20
 
+class MealCreateView(CreateView):
+    model = Meals
+    form_class = MealsForm
+    template_name = "core/meal_form.html"
+    success_url = reverse_lazy("meals_list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_title"] = "Add New Meal"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Meal added successfully!")
+        return super().form_valid(form)
+
+class MealUpdateView(UpdateView):
+    model = Meals
+    form_class = MealsForm
+    template_name = "core/meal_form.html"
+    success_url = reverse_lazy("meals_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_title"] = "Edit Meal"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Meal updated successfully!")
+        return super().form_valid(form)
+
+class MealDeleteView(DeleteView):
+    model = Meals
+    template_name = "core/meal_confirm_delete.html"
+    success_url = reverse_lazy("meals_list")
+    context_object_name = "meal"
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Meal deleted successfully!")
+        return super().delete(request, *args, **kwargs)
+
+# Simple weekly summary view (read-only)
 @login_required
-@transaction.atomic
-def weekly_meals(request):
-    """Handles weekly meal creation for all recipients - without deleting existing data"""
-    recipients = MealRecipient.objects.all()
-    meal_types = Meals.CATEGORY_CHOICES
-    days = range(7)
-
-    if not recipients.exists():
-        messages.warning(request, "No recipients found. Please add recipients first.")
-        return redirect('recipients_list')
-
-    if request.method == "POST":
-        form = WeeklyMealsForm(request.POST)
-        if form.is_valid():
-            week_start = form.cleaned_data["weekStart"]
-            week_end = week_start + timedelta(days=6)
-            
-            meals_created = 0
-            meals_updated = 0
-            
-            for day in days:
-                meal_date = week_start + timedelta(days=day)
-                for recipient in recipients:
-                    for code, _ in meal_types:
-                        field_name = f"{day}_{recipient.id}_{code}"
-                        quantity = form.cleaned_data.get(field_name, 0) or 0
-                        
-                        if quantity > 0:
-                            # Check if meal already exists for this date, recipient and category
-                            existing_meal = Meals.objects.filter(
-                                mealDate=meal_date,
-                                mealsFor=recipient,
-                                mealCategory=code,
-                                weekStart=week_start,
-                                weekEnd=week_end
-                            ).first()
-                            
-                            if existing_meal:
-                                # Update existing meal
-                                existing_meal.quantity = quantity
-                                existing_meal.save()
-                                meals_updated += 1
-                            else:
-                                # Create new meal
-                                Meals.objects.create(
-                                    weekStart=week_start,
-                                    weekEnd=week_end,
-                                    mealDate=meal_date,
-                                    mealCategory=code,
-                                    mealsFor=recipient,
-                                    quantity=quantity,
-                                )
-                                meals_created += 1
-
-            if meals_created > 0 or meals_updated > 0:
-                messages.success(request, f"Successfully created {meals_created} new meals and updated {meals_updated} existing meals.")
-            else:
-                messages.info(request, "No meals were added or updated.")
-                
-            return redirect("weekly_summary", year=week_start.year, week=week_start.isocalendar()[1])
-    else:
-        form = WeeklyMealsForm()
+def weekly_meals_overview(request):
+    """Simple overview of weekly meals - read only"""
+    today = date.today()
+    year = request.GET.get('year', today.year)
+    week = request.GET.get('week', today.isocalendar()[1])
+    
+    try:
+        year = int(year)
+        week = int(week)
+        start_date = date.fromisocalendar(year, week, 1)  # Monday
+        end_date = start_date + timedelta(days=6)  # Sunday
+    except (ValueError, TypeError):
+        start_date = date.fromisocalendar(today.year, today.isocalendar()[1], 1)
+        end_date = start_date + timedelta(days=6)
+    
+    # Get all meals for the week
+    meals = Meals.objects.filter(
+        mealDate__range=[start_date, end_date]
+    ).select_related('mealsFor').order_by('mealDate', 'mealsFor__name')
+    
+    # Group by recipient and date
+    meals_by_recipient = {}
+    for meal in meals:
+        recipient_name = meal.mealsFor.name
+        if recipient_name not in meals_by_recipient:
+            meals_by_recipient[recipient_name] = {}
         
-        # Pre-fill form with existing data if week parameter is provided
-        week_param = request.GET.get('week_start')
-        if week_param:
-            try:
-                week_start = datetime.strptime(week_param, '%Y-%m-%d').date()
-                form = WeeklyMealsForm(initial={'weekStart': week_start})
-                
-                # Pre-fill existing meal quantities
-                week_end = week_start + timedelta(days=6)
-                existing_meals = Meals.objects.filter(
-                    weekStart=week_start,
-                    weekEnd=week_end
-                )
-                
-                for meal in existing_meals:
-                    day_diff = (meal.mealDate - week_start).days
-                    if 0 <= day_diff <= 6:
-                        field_name = f"{day_diff}_{meal.mealsFor.id}_{meal.mealCategory}"
-                        form.fields[field_name].initial = meal.quantity
-            except ValueError:
-                pass
-
-    # Prepare field matrix for template rendering
-    field_matrix = [
-        [f"{day}_{recipient.id}_{code}" for recipient in recipients for code, _ in meal_types]
-        for day in days
-    ]
-
-    return render(request, "core/weekly_meals.html", {
-        "form": form,
-        "recipients": recipients,
-        "meal_types": meal_types,
-        "days": days,
-        "field_matrix": field_matrix,
-    })
+        date_str = meal.mealDate.strftime('%Y-%m-%d')
+        if date_str not in meals_by_recipient[recipient_name]:
+            meals_by_recipient[recipient_name][date_str] = {}
+        
+        meals_by_recipient[recipient_name][date_str][meal.mealCategory] = meal.quantity
+    
+    # Create dates for the template
+    dates = []
+    for i in range(7):
+        current_date = start_date + timedelta(days=i)
+        dates.append({
+            'date': current_date,
+            'day_name': current_date.strftime('%A'),
+            'date_short': current_date.strftime('%m/%d')
+        })
+    
+    context = {
+        'meals_by_recipient': meals_by_recipient,
+        'dates': dates,
+        'start_date': start_date,
+        'end_date': end_date,
+        'year': year,
+        'week': week,
+        'meal_types': dict(Meals.CATEGORY_CHOICES),
+    }
+    return render(request, 'core/weekly_meals_overview.html', context)
 
 
 # Meal Recipient Views
@@ -983,24 +981,24 @@ def generate_formh_summary(request, year, month):
         allowance = RationAllowance.objects.filter(category=category).first()
         
         # FIX: Use expense_for_month instead of total_expense_for_month
-        total_usage = g_entry.expense_for_month / 100  # Remove the "total_" prefix
-        avg_per_person_per_day = round(total_usage / 30, 3)
+        total_usage = g_entry.expense_for_month / 100  # Convert to appropriate units if needed
+        avg_per_person_per_day = round(total_usage / 30, 3) if total_usage else 0
 
         formh, _ = FormH.objects.update_or_create(
             category=category, year=year, month=month,
             defaults={
-                "week1_usage": g_entry.week1_expense,
-                "week2_usage": g_entry.week2_expense,
-                "week3_usage": g_entry.week3_expense,
-                "week4_usage": g_entry.week4_expense,
-                "week5_usage": g_entry.week5_expense,
+                "week1_usage": g_entry.week1_expense or 0,
+                "week2_usage": g_entry.week2_expense or 0,
+                "week3_usage": g_entry.week3_expense or 0,
+                "week4_usage": g_entry.week4_expense or 0,
+                "week5_usage": g_entry.week5_expense or 0,
                 "total_usage": total_usage,
                 "avg_per_person_per_day": avg_per_person_per_day,
             },
         )
 
         out_of_range = False
-        if allowance:
+        if allowance and avg_per_person_per_day:
             out_of_range = (
                 avg_per_person_per_day < allowance.min_allowance
                 or avg_per_person_per_day > allowance.max_allowance
@@ -1017,7 +1015,6 @@ def generate_formh_summary(request, year, month):
         "month": month,
         "year": year,
     })
-
 
 @login_required
 def form_h_monthly_preview(request, year, month):
@@ -1085,17 +1082,16 @@ def export_form_h_monthly_excel(request, year=None, month=None):
     return response
 
 
-# New Functionalities
 @login_required
 def annual_summary(request, year=None):
     """FORM X - Annual feeding, expenditure and ration summary"""
     year = year or date.today().year
     
-    # Calculate annual data
-    monthly_summaries = MonthlySummary.objects.filter(year=year)
-    total_meals = monthly_summaries.aggregate(Sum('totalMeals'))['totalMeals__sum'] or 0
+    # Calculate annual data directly from Meals model
+    meals_queryset = Meals.objects.filter(mealDate__year=year)
+    total_meals = meals_queryset.aggregate(total=Sum('quantity'))['total'] or 0
     
-    # Calculate expenses manually since expense_for_month is a property
+    # Calculate expenses manually from FormG
     form_g_data = FormG.objects.filter(year=year)
     total_expenses = 0
     total_budget = 0
@@ -1116,12 +1112,15 @@ def annual_summary(request, year=None):
     if total_meals > 0:
         avg_cost_per_meal = total_expenses / total_meals
     
-    # Get monthly breakdown
+    # Get monthly breakdown from actual Meals data
     monthly_breakdown = []
     for month in range(1, 13):
-        month_meals = MonthlySummary.objects.filter(year=year, month=month).first()
+        # Get meals for this month
+        month_meals = meals_queryset.filter(mealDate__month=month).aggregate(
+            total=Sum('quantity')
+        )['total'] or 0
         
-        # Calculate monthly expenses manually
+        # Calculate monthly expenses from FormG
         month_expenses = 0
         month_form_g = FormG.objects.filter(year=year, month=month)
         for form_g in month_form_g:
@@ -1136,7 +1135,7 @@ def annual_summary(request, year=None):
         monthly_breakdown.append({
             'month': month,
             'month_name': date(year, month, 1).strftime('%B'),
-            'meals': month_meals.totalMeals if month_meals else 0,
+            'meals': month_meals,
             'expenses': month_expenses,
         })
     
@@ -1150,7 +1149,7 @@ def annual_summary(request, year=None):
     }
     
     return render(request, 'core/annual_summary.html', context)
-
+   
 
 @login_required
 def stock_variance_report(request):
@@ -1162,11 +1161,10 @@ def stock_variance_report(request):
     for movement in movements:
         # Calculate variance manually
         calculated_end_stock = (movement.total_received or 0) - (movement.total_issued or 0) - (movement.extern_issues or 0)
+       
+        variance = 0  
         
-        # For now, use a simple variance calculation since we don't have start/end stock fields
-        variance = 0  # Default to 0 since we don't have the actual fields
-        
-        # Flag items with potential issues (received but not issued, or vice versa)
+   
         needs_attention = (
             (movement.total_received > 0 and movement.total_issued == 0) or
             (movement.total_issued > movement.total_received) or
@@ -1185,3 +1183,153 @@ def stock_variance_report(request):
         'title': 'Stock Variance Report'
     }
     return render(request, 'core/stock_variance_report.html', context)
+
+@login_required
+def export_annual_summary_excel(request, year=None):
+    """Export annual summary to Excel"""
+    year = year or date.today().year
+    
+    # Calculate annual data directly from Meals model (same as annual_summary view)
+    meals_queryset = Meals.objects.filter(mealDate__year=year)
+    total_meals = meals_queryset.aggregate(total=Sum('quantity'))['total'] or 0
+    
+    # Calculate expenses manually from FormG
+    form_g_data = FormG.objects.filter(year=year)
+    total_expenses = 0
+    total_budget = 0
+    
+    for form_g in form_g_data:
+        # Calculate expense_for_month manually
+        expense = sum([
+            form_g.week1_expense or 0,
+            form_g.week2_expense or 0, 
+            form_g.week3_expense or 0,
+            form_g.week4_expense or 0,
+            form_g.week5_expense or 0
+        ])
+        total_expenses += expense
+        total_budget += form_g.monthly_budget or 0
+    
+    avg_cost_per_meal = 0
+    if total_meals > 0:
+        avg_cost_per_meal = total_expenses / total_meals
+    
+    # Get monthly breakdown from actual Meals data
+    monthly_breakdown = []
+    for month in range(1, 13):
+        # Get meals for this month
+        month_meals = meals_queryset.filter(mealDate__month=month).aggregate(
+            total=Sum('quantity')
+        )['total'] or 0
+        
+        # Calculate monthly expenses from FormG
+        month_expenses = 0
+        month_form_g = FormG.objects.filter(year=year, month=month)
+        for form_g in month_form_g:
+            month_expenses += sum([
+                form_g.week1_expense or 0,
+                form_g.week2_expense or 0,
+                form_g.week3_expense or 0, 
+                form_g.week4_expense or 0,
+                form_g.week5_expense or 0
+            ])
+        
+        monthly_breakdown.append({
+            'month': month,
+            'month_name': date(year, month, 1).strftime('%B'),
+            'meals': month_meals,
+            'expenses': month_expenses,
+        })
+
+    # Create Excel workbook
+    wb = openpyxl.Workbook()
+    
+    # Sheet 1: Annual Summary
+    ws1 = wb.active
+    ws1.title = f"Annual Summary {year}"
+    
+    # Title and headers
+    title_font = Font(size=16, bold=True)
+    header_font = Font(bold=True)
+    
+    ws1.merge_cells('A1:D1')
+    ws1['A1'] = f"ANNUAL FEEDING, EXPENDITURE AND RATION SUMMARY - {year}"
+    ws1['A1'].font = title_font
+    ws1['A1'].alignment = Alignment(horizontal='center')
+    
+    # Summary section
+    ws1.append([])
+    ws1.append(["ANNUAL SUMMARY"])
+    ws1.append(["Total Meals Served:", total_meals])
+    ws1.append(["Total Expenses:", f"R{total_expenses:,.2f}"])
+    ws1.append(["Total Budget:", f"R{total_budget:,.2f}"])
+    ws1.append(["Average Cost Per Meal:", f"R{avg_cost_per_meal:.2f}"])
+    
+    # Monthly breakdown section
+    ws1.append([])
+    ws1.append(["MONTHLY BREAKDOWN"])
+    ws1.append(["Month", "Meals Served", "Expenses", "Cost Per Meal"])
+    
+    for month_data in monthly_breakdown:
+        month_cost_per_meal = 0
+        if month_data['meals'] > 0:
+            month_cost_per_meal = month_data['expenses'] / month_data['meals']
+        
+        ws1.append([
+            month_data['month_name'],
+            month_data['meals'],
+            f"R{month_data['expenses']:,.2f}",
+            f"R{month_cost_per_meal:.2f}"
+        ])
+    
+    # Format headers
+    for row in ws1.iter_rows(min_row=1, max_row=ws1.max_row):
+        for cell in row:
+            if cell.value in ["ANNUAL SUMMARY", "MONTHLY BREAKDOWN"] or cell.row <= 6:
+                cell.font = header_font
+    
+    # Adjust column widths
+    for col in ws1.columns:
+        max_length = max(len(str(cell.value)) for cell in col if cell.value)
+        ws1.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+    # Sheet 2: Detailed Monthly Data
+    ws2 = wb.create_sheet(title=f"Monthly Details {year}")
+    
+    # Headers for detailed monthly data
+    headers = ["Month", "Category", "Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Monthly Total", "Monthly Budget"]
+    ws2.append(headers)
+    
+    # Add Form G data for each month
+    for month in range(1, 13):
+        form_g_entries = FormG.objects.filter(year=year, month=month).order_by('category__description')
+        
+        for entry in form_g_entries:
+            ws2.append([
+                date(year, month, 1).strftime('%B'),
+                entry.category.description,
+                float(entry.week1_expense or 0),
+                float(entry.week2_expense or 0),
+                float(entry.week3_expense or 0),
+                float(entry.week4_expense or 0),
+                float(entry.week5_expense or 0),
+                float(entry.expense_for_month),
+                float(entry.monthly_budget or 0)
+            ])
+    
+    # Format headers for sheet 2
+    for cell in ws2[1]:
+        cell.font = header_font
+    
+    # Adjust column widths for sheet 2
+    for col in ws2.columns:
+        max_length = max(len(str(cell.value)) for cell in col if cell.value)
+        ws2.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+    # Create response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = f'attachment; filename="Annual_Summary_{year}.xlsx"'
+    wb.save(response)
+    return response

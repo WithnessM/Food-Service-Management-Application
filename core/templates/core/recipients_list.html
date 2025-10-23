@@ -16,7 +16,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Name</th>
-                            <th>Date Added</th>
+                          
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -24,7 +24,7 @@
                         {% for recipient in recipients %}
                         <tr>
                             <td class="fw-medium">{{ recipient.name }}</td>
-                            <td class="text-muted">{{ recipient.created_at|date:"M j, Y" }}</td>
+                           
                             <td class="text-end">
                                 <a href="{% url 'recipient_update' recipient.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
                                 <a href="{% url 'recipient_delete' recipient.id %}" class="btn btn-sm btn-outline-danger"
@@ -45,11 +45,11 @@
             {% endif %}
         </div>
     </div>
+        <a href="{% url 'dashboard' %}"
+   style="display: inline-block; margin-top: 20px; padding: 8px 12px; background-color: #30aac9ff; text-decoration: none; border-radius: 5px;">
+   Back to Dashboard
+</a>
 
-    <div class="mt-4">
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-            ← Back to Dashboard
-        </a>
     </div>
 </div>
 
