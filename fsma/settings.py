@@ -19,10 +19,7 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-
-
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1').split(',')
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -65,32 +62,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fsma.wsgi.application'
-# Database configuration
 
-USE_LOCAL_DB = config('USE_LOCAL_DB', default=False, cast=bool)
-
-if USE_LOCAL_DB:
-    # Local database SQLite 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    # Fo the Cloud database (PostgreSQL)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST'),
-            'PORT': config('DB_PORT', cast=int),
-        }
-    }
-
-'''
+# Database configuration (PostgreSQL only)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -101,7 +74,6 @@ DATABASES = {
         'PORT': config('DB_PORT', cast=int),
     }
 }
-'''
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -117,12 +89,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
+# Static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -137,5 +108,5 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+# Email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
